@@ -1,0 +1,35 @@
+{
+  "name": "html2pdf",
+  "version": "1.0.0",
+  "description": "Render an HTML file (local or URL) into a faithful PDF using a real headless browser (Microsoft Edge via puppeteer-core). Preserves CSS gradients, shadows, custom fonts, and responsive layouts — no @media print surprises.",
+  "main": "scripts/render.js",
+  "type": "commonjs",
+  "bin": {
+    "html2pdf-render": "scripts/render.js"
+  },
+  "scripts": {
+    "render": "node scripts/render.js",
+    "check": "node scripts/check-env.js",
+    "example": "node scripts/render.js examples/minimal.html out.pdf"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "puppeteer-core": "^22.15.0"
+  },
+  "keywords": [
+    "html",
+    "pdf",
+    "edge",
+    "chromium",
+    "puppeteer",
+    "screenshot",
+    "report"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yyh3/html2pdf.git"
+  }
+}

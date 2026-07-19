@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>html2pdf demo</title>
+  <style>
+    :root {
+      --ink: #1a2e2a;
+      --paper: #f7f3ea;
+      --card: #fffdf8;
+      --forest: #1f6b57;
+      --forest-dark: #12493c;
+      --sun: #f0a64b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper);
+           font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+           line-height: 1.6; }
+    main { width: min(720px, calc(100% - 32px)); margin: 32px auto; }
+    .hero { position: relative; overflow: hidden; padding: 36px 32px; color: white;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #123f36 0%, #2f7f68 55%, #8ebaa7 100%);
+            box-shadow: 0 18px 50px rgba(26, 62, 52, .12); }
+    .hero::after { content: ""; position: absolute; right: -60px; top: -80px;
+                   width: 240px; height: 240px; border-radius: 50%;
+                   background: rgba(255,255,255,.12); }
+    .eyebrow { margin: 0 0 6px; font-weight: 700; letter-spacing: .14em;
+               text-transform: uppercase; opacity: .86; }
+    h1 { margin: 0; font-size: 2rem; line-height: 1.15; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .meta span { display: inline-flex; align-items: center; min-height: 28px;
+                 padding: 4px 12px; border-radius: 999px; font-size: .85rem;
+                 font-weight: 700; background: rgba(255,255,255,.16);
+                 border: 1px solid rgba(255,255,255,.24); }
+    section { margin: 28px 0; }
+    h2 { margin: 0 0 12px; font-size: 1.4rem; }
+    .card { padding: 18px; border: 1px solid #dfe5dc; border-radius: 16px;
+            background: var(--card); box-shadow: 0 8px 24px rgba(31, 75, 64, .06);
+            margin-bottom: 12px; }
+    .card h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--forest-dark); }
+    .row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; }
+    .time { color: var(--forest); font-weight: 800; }
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
+            background: #dfefe8; color: var(--forest-dark); font-size: .85rem;
+            font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">DEMO · html2pdf</p>
+      <h1>Faithful HTML → PDF rendering</h1>
+      <div class="meta">
+        <span>Gradients</span><span>Shadows</span><span>Rounded cards</span>
+        <span>Custom typography</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>What html2pdf keeps</h2>
+      <div class="card">
+        <h3>Screen styles, not print</h3>
+        <p>By default this card keeps its colored background, soft shadow, and rounded corners. The default <code>@media print</code> rules in most browsers would strip them — html2pdf uses <code>emulateMediaType('screen')</code> instead.</p>
+        <span class="pill">emulateMedia: screen</span>
+      </div>
+      <div class="card">
+        <h3>Sticky elements disabled</h3>
+        <p>Sticky nav bars and timeline labels would normally repeat on every page of a long document. html2pdf disables <code>position: sticky</code> before capture, so each element only appears once.</p>
+        <span class="pill">no-repeat sticky</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sample timeline</h2>
+      <div class="card row">
+        <div class="time">14:30</div>
+        <div>
+          <h3>Departure</h3>
+          <p>Top up fuel, download offline maps, swap drivers every 2 hours.</p>
+        </div>
+      </div>
+      <div class="card row">
+        <div class="time">19:00</div>
+        <div>
+          <h3>Check in</h3>
+          <p>Two rooms, free cancellation, parking included.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

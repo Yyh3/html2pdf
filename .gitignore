@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build / output
+out/
+dist/
+*.pdf
+!examples/*.pdf
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log
+npm-debug.log*
+
+# env
+.env
+.env.local
