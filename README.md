@@ -29,10 +29,12 @@ Most "HTML to PDF" tools do one of two things:
 ## Requirements
 
 - **Node.js 18+**
-- **Microsoft Edge** installed (default on Windows 10/11) at one of:
-  - `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`
-  - `C:\Program Files\Microsoft\Edge\Application\msedge.exe`
-- On macOS / Linux: pass `--chrome` to point to any Chromium-based browser binary.
+- A **Chromium-based browser** — auto-detected in this order:
+  - `HTML2PDF_CHROME` environment variable (any platform)
+  - **Windows**: Microsoft Edge (built-in on Win10/11), then Google Chrome
+  - **macOS**: Google Chrome, Microsoft Edge, or Chromium in `/Applications`
+  - **Linux**: `google-chrome`, `chromium`, `chromium-browser`, or `microsoft-edge`
+- Override detection any time with `--chrome=/path/to/browser`.
 
 ## Install
 
@@ -57,6 +59,12 @@ node scripts/render.js https://example.com report.pdf
 
 # Custom page size and margins
 node scripts/render.js page.html out.pdf --format=A4 --margin=10mm
+
+# JS-heavy page: wait for a selector, then an extra second
+node scripts/render.js dashboard.html out.pdf --wait-selector=".chart-ready" --wait=1000
+
+# Append your own CSS before capture (inline or @file)
+node scripts/render.js page.html out.pdf --extra-css="@my-fixes.css"
 ```
 
 ### From your own code
@@ -77,9 +85,9 @@ await renderHtmlToPdf({
 });
 ```
 
-### As a Mavis skill
+### As an agent skill (SKILL.md)
 
-If you use Mavis (https://mavis.local), the `skills/html-to-pdf/` subdirectory is a ready-to-install skill. Copy or symlink it to `~/.mavis/agents/<your-agent>/skills/html-to-pdf/`. After restart, Mavis will trigger the skill whenever you ask "convert this HTML to PDF" / "把这份 HTML 转成 PDF" / "render this page to PDF".
+The `skills/html-to-pdf/` subdirectory is a self-contained skill for AI agents that support the `SKILL.md` format (e.g. Kimi Work, Claude-style skill loaders). Copy or symlink it into your agent's skills directory, then run `npm install` inside it. After reload, the agent will trigger the skill on requests like "convert this HTML to PDF" / "把这份 HTML 转成 PDF" / "render this page to PDF".
 
 ## Options
 
@@ -90,11 +98,13 @@ If you use Mavis (https://mavis.local), the `skills/html-to-pdf/` subdirectory i
 | `format` | `A4` | Page format — `A4`, `A3`, `Letter`, `Legal`, or `{width, height}` in CSS units |
 | `landscape` | `false` | Rotate page |
 | `margin` | `10mm` | Single value (uniform) or 4-value `top right bottom left` |
-| `viewport.width` | `794` | Logical pixels. **794 = A4 width at 96 dpi** — narrow enough to trigger `@media (max-width: 860px)` layouts, which paginate cleanly |
+| `viewportWidth` | `794` | Logical pixels. **794 = A4 width at 96 dpi** — narrow enough to trigger `@media (max-width: 860px)` layouts, which paginate cleanly |
 | `printBackground` | `true` | Required for gradients / shadows / colored cards to show |
 | `emulateMedia` | `screen` | Set to `print` if you actually want a printer-stripped PDF |
-| `chrome` | auto | Override Edge path if needed |
-| `extraCss` | `''` | CSS injected right before capture — handy for `@page` rules, `break-inside: avoid` etc. |
+| `waitForSelector` | `null` | CSS selector to wait for before capturing (JS-heavy pages). CLI: `--wait-selector` |
+| `extraWaitMs` | `0` | Extra fixed delay after load, in ms. CLI: `--wait` |
+| `chrome` | auto | Override browser binary path if needed |
+| `extraCss` | built-in fixes | CSS injected right before capture — handy for `@page` rules, `break-inside: avoid` etc. Your CSS is appended after the built-in sticky/pagination fixes. CLI: `--extra-css` (inline or `@file`) |
 
 ## What it does to your HTML
 
@@ -106,7 +116,7 @@ If you use Mavis (https://mavis.local), the `skills/html-to-pdf/` subdirectory i
 
 ## Limitations
 
-- **JavaScript-heavy pages** that need more than ~1s to settle may not capture fully. Use `waitForSelector` or `waitForTimeout` if needed.
+- **JavaScript-heavy pages** that need time to settle may not capture fully. Use `--wait-selector` to block on a specific element, or `--wait=<ms>` for a fixed delay.
 - **External web fonts** not cached on the system will not load (no network fonts in headless). Either embed them via `<link>` to a CDN, or use system fonts.
 - **CORS / mixed content** warnings may appear in console — usually harmless for capture.
 - **PDF/A compliance**: not guaranteed. This produces standard PDF 1.4-ish output.

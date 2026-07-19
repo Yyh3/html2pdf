@@ -4,8 +4,8 @@
  *
  * Checks:
  *   1. Node.js version >= 18
- *   2. A Chromium-based browser is reachable (Microsoft Edge on Windows by default)
- *   3. puppeteer-core is installed in the local node_modules
+ *   2. A Chromium-based browser is reachable (auto-detected per platform)
+ *   3. puppeteer-core is installed (next to this script, or in the cwd)
  *
  * Exit code: 0 = all good, 1 = at least one issue.
  */
@@ -15,7 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { findEdge } = require('./render');
+const { findBrowser } = require('./render');
 
 let problems = 0;
 
@@ -30,23 +30,30 @@ function checkNode() {
 }
 
 function checkBrowser() {
-  const edge = findEdge();
-  if (edge) ok(`Browser found: ${edge}`);
+  const found = findBrowser();
+  if (found) ok(`Browser found: ${found}`);
   else {
     bad('No Chromium-based browser found.');
-    info('On Windows, install Microsoft Edge (built-in on Win10/11).');
-    info('On macOS / Linux, set HTML2PDF_CHROME=/path/to/chrome or pass { chrome: ... }');
+    info('Windows: install Microsoft Edge (built-in on Win10/11) or Google Chrome.');
+    info('macOS:   install Google Chrome / Microsoft Edge / Chromium.');
+    info('Linux:   install google-chrome or chromium via your package manager.');
+    info('Or set HTML2PDF_CHROME=/path/to/browser to point at a binary directly.');
   }
 }
 
 function checkPuppeteer() {
-  try {
-    const pkg = require(path.join(process.cwd(), 'node_modules', 'puppeteer-core', 'package.json'));
-    ok(`puppeteer-core ${pkg.version} installed`);
-  } catch (_) {
-    bad('puppeteer-core is not installed.');
-    info('Run: npm install puppeteer-core');
+  // Look next to this script first (scripts/ -> package root), then the cwd,
+  // so the check works no matter where it is invoked from.
+  const roots = [path.join(__dirname, '..'), process.cwd()];
+  for (const root of roots) {
+    try {
+      const pkg = require(path.join(root, 'node_modules', 'puppeteer-core', 'package.json'));
+      ok(`puppeteer-core ${pkg.version} installed (${path.join(root, 'node_modules')})`);
+      return;
+    } catch (_) { /* keep looking */ }
   }
+  bad('puppeteer-core is not installed.');
+  info(`Run: cd "${path.join(__dirname, '..')}" && npm install`);
 }
 
 console.log('html2pdf environment check');

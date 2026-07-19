@@ -40,6 +40,8 @@ Do not ask about viewport, browser path, or dependencies — the script handles 
    - `--margin=10mm` or `10mm 8mm 12mm 8mm`
    - `--print` to use `@media print` styles (drops colors); omit to keep screen styles
    - `--wait=1500` if the page is JS-heavy and 1s networkidle isn't enough
+   - `--wait-selector=".chart"` to wait until a specific element appears before capturing
+   - `--extra-css="@fixes.css"` to append your own CSS (`@file` reads from a file, inline CSS also works)
 
    From code instead:
    ```js
@@ -60,7 +62,7 @@ Do not ask about viewport, browser path, or dependencies — the script handles 
 - File is a standard PDF (vector text, selectable / copyable), not a flattened screenshot.
 - 794px-wide viewport, A4 portrait by default, 10mm margin all sides.
 - Page count = however many A4 pages the HTML fills.
-- The result is delivered to the user via `<deliver-assets>` as a `type="file"` media tag, never just the path.
+- Report the absolute saved path to the user (in Kimi Work: save into the workspace and link the file in your reply).
 
 ## Failure handling
 
@@ -68,14 +70,14 @@ Do not ask about viewport, browser path, or dependencies — the script handles 
 - **`No Chromium-based browser found`** — on Windows, check `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`. If missing, tell the user to install Edge or Chrome and re-run.
 - **`puppeteer-core is not installed`** — run `npm install puppeteer-core` in the skill directory. Don't try to use `puppeteer` (full) — that downloads a 200MB Chromium and is overkill when Edge already exists.
 - **PDF comes out blank or mostly white** — usually the HTML depends on JS that didn't finish loading. Add `--wait=2000` and re-run. If the page fetches data, open the source HTML and confirm it works in a normal browser first.
-- **Sticky elements repeat on every page** — already disabled by the bundled `extraCss`. If a custom sticky still repeats, add `--extra-css=` to override (only via the JS API; CLI doesn't expose this yet).
+- **Sticky elements repeat on every page** — already disabled by the bundled `extraCss`. If a custom sticky still repeats, append your own override with `--extra-css=".my-sticky { position: static !important; }"`.
 - **Chinese / CJK characters look like tofu boxes** — the headless browser can't load web fonts. Either embed the font in the HTML, or use system fonts (the bundled example already uses `"Segoe UI", "Microsoft YaHei", "PingFang SC"`).
-- **Page break inside a card** — already handled by the default `extraCss`. If a custom card still splits, the user can override `--extra-css` via the JS API.
+- **Page break inside a card** — already handled by the default `extraCss`. If a custom card still splits, target it with `--extra-css=".my-card { break-inside: avoid; }"`.
 
 ## Examples
 
 **Input:** "把 `C:\reports\q3.html` 转成 PDF"
-**Action:** locate input → `node scripts/render.js "C:\reports\q3.html" "C:\reports\q3.pdf"` → deliver via `<deliver-assets>`.
+**Action:** locate input → `node scripts/render.js "C:\reports\q3.html" "C:\reports\q3.pdf"` → report the saved path.
 **Output:** 8-page PDF with full styling preserved.
 
 **Input:** "Render https://example.com to PDF"

@@ -1,6 +1,6 @@
 {
   "name": "html2pdf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Render an HTML file (local or URL) into a faithful PDF using a real headless browser (Microsoft Edge via puppeteer-core). Preserves CSS gradients, shadows, custom fonts, and responsive layouts — no @media print surprises.",
   "main": "scripts/render.js",
   "type": "commonjs",
